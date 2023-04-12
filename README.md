@@ -6,15 +6,12 @@
 
 ## To create two VMs within the Subnetwork ##
 
-The code needs to be run thrice:
-
-1. For the creation of VPC
-2. For the creation of Subnetwork
-3. For the creation of VMs
 
 ```bash
 
 terraform apply
 
 ```
-Apply this code thrice and two VMs will be created within Zone = us-west2-a
+> Add the depends_on parameter within each creation so that all the processes do not run in parallel. 
+
+### Running the processes parallely results in errors as the delays in the creation of VPC network and the Subnetwork cause the VMs not to be created. ###

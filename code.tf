@@ -7,7 +7,9 @@ resource "google_compute_network" "vpc-assignment14" {
   enable_ula_internal_ipv6 = true
 }
 
+
 resource "google_compute_subnetwork" "subnetwork-assignment14" {
+  depends_on = [google_compute_network.vpc-assignment14]
   name          = "subnetwork-assignment14"
   project       = "pn-project-374416"
   ip_cidr_range = "10.0.0.0/22"
@@ -24,6 +26,7 @@ variable "vms"{
 }
 
 resource "google_compute_instance" "default" {
+  depends_on = [google_compute_subnetwork.subnetwork-assignment14]
   count = 2
   project = "pn-project-374416"
   name         = "${var.vms}-${count.index}"
