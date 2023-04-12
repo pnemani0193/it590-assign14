@@ -2,6 +2,9 @@ variable "project_name"{}
 variable "vpc_name"{}
 variable "subnet_name"{}
 variable "vms" {}
+variable "number" {}
+variable "type" {}
+
 
 resource "google_compute_network" "vpc" {
   project                 = var.project_name
@@ -14,7 +17,7 @@ resource "google_compute_network" "vpc" {
 
 
 resource "google_compute_subnetwork" "subnetwork" {
-  depends_on = [google_compute_network.vpc]
+  
   name          = var.subnet_name
   project       = var.project_name
   ip_cidr_range = "10.0.0.0/22"
@@ -23,16 +26,15 @@ resource "google_compute_subnetwork" "subnetwork" {
   stack_type       = "IPV4_IPV6"
   ipv6_access_type = "INTERNAL"
 
-  network       = var.vpc_name
+  network       = google_compute_network.vpc.name
 }
 
 
 resource "google_compute_instance" "default" {
-  depends_on = [google_compute_subnetwork.subnetwork]
-  count = 2
+  count = var.number
   project = var.project_name
   name         = "${var.vms}-${count.index}"
-  machine_type = "e2-medium"
+  machine_type = var.type
   zone         = "us-west2-a"
 
   tags = ["web-server"]
@@ -43,8 +45,8 @@ resource "google_compute_instance" "default" {
     }
   }
   network_interface {
-    network = var.vpc_name
-    subnetwork = var.subnet_name
+    network = google_compute_network.vpc.name
+    subnetwork = google_compute_subnetwork.subnetwork.name
   }
 
 }
